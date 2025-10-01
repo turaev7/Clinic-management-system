@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="{{ lang }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ t('app_title') }}</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Flatpickr styles -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+  <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="{{ url_for('index') }}">{{ t('app_title') }}</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsExample" aria-controls="navbarsExample" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarsExample">
+      {% if session.get('user_id') %}
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('register') }}">{{ t('registration') }}</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('patients') }}">{{ t('patients') }}</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('inpatient') }}">{{ t('inpatient') }}</a></li>
+        {% if is_superadmin %}
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">{{ t('settings') }}</a>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="{{ url_for('settings_wards') }}">{{ t('wards_list') }}</a></li>
+            <li><a class="dropdown-item" href="{{ url_for('settings_doctors') }}">{{ t('doctors_list') }}</a></li>
+            <li><a class="dropdown-item" href="{{ url_for('settings_import') }}">{{ t('import') }}</a></li>
+            <li><a class="dropdown-item" href="{{ url_for('settings_cleanup_invalid') }}">
+              {{ t('cleanup_invalid') if t('cleanup_invalid') != 'cleanup_invalid' else 'Cleanup invalid patients' }}
+            </a></li>
+          </ul>
+        </li>
+        {% endif %}
+      </ul>
+      <div class="d-flex align-items-center gap-2">
+        <div class="btn-group" role="group" aria-label="Language switcher">
+          <a class="btn btn-outline-light btn-sm" href="{{ url_for('set_lang', lang='uz', next=request.full_path) }}">UZ</a>
+          <a class="btn btn-outline-light btn-sm" href="{{ url_for('set_lang', lang='ru', next=request.full_path) }}">RU</a>
+          <a class="btn btn-outline-light btn-sm" href="{{ url_for('set_lang', lang='en', next=request.full_path) }}">EN</a>
+        </div>
+        <a class="btn btn-light btn-sm" href="{{ url_for('logout') }}">{{ t('logout') }}</a>
+      </div>
+      {% else %}
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0"></ul>
+      <div class="d-flex align-items-center gap-2">
+        <div class="btn-group" role="group" aria-label="Language switcher">
+          <a class="btn btn-outline-light btn-sm" href="{{ url_for('set_lang', lang='uz', next=request.full_path) }}">UZ</a>
+          <a class="btn btn-outline-light btn-sm" href="{{ url_for('set_lang', lang='ru', next=request.full_path) }}">RU</a>
+          <a class="btn btn-outline-light btn-sm" href="{{ url_for('set_lang', lang='en', next=request.full_path) }}">EN</a>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</nav>
+
+<main class="container my-4">
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+  {% block content %}{% endblock %}
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Flatpickr -->
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

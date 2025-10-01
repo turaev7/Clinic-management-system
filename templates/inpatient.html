@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="d-flex align-items-center justify-content-between mb-3">
+  <h4 class="mb-0">{{ t('inpatient') }}</h4>
+  <span class="text-muted small">🕒 {{ at_str }}</span>
+</div>
+
+<form class="row g-2 align-items-end mb-3" method="get" action="{{ url_for('inpatient') }}">
+  <div class="col-md-4">
+    <label class="form-label">{{ t('as_of') }}</label>
+    <div class="input-group">
+      <span class="input-group-text"><i class="bi bi-calendar-event"></i></span>
+      <input name="at" class="form-control" placeholder="dd.mm.yyyy HH:MM" value="{{ at_str or '' }}">
+    </div>
+    <div class="form-text">dd.mm.yyyy HH:MM</div>
+  </div>
+  <div class="col-md-2">
+    <button class="btn btn-primary w-100">{{ t('show') }}</button>
+  </div>
+  <div class="col-md-3">
+    <a class="btn btn-outline-success w-100" href="{{ url_for('inpatient_export', at=at_str) }}">{{ t('export') }}</a>
+  </div>
+</form>
+
+<div class="row g-3">
+  {% set block_cards = [
+    ('A', 'A_block', 'table-primary'),
+    ('B', 'B_block', 'table-success'),
+    ('C', 'C_block', 'table-warning'),
+    ('D', 'D_block', 'table-info'),
+    ('R', 'R_block', 'table-danger'),
+  ] %}
+  {% for code, label_key, row_class in block_cards %}
+  <div class="col-lg-6">
+    <div class="card shadow-sm">
+      <div class="card-header">{{ t(label_key) }}</div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-sm table-hover">
+            <thead>
+              <tr><th>{{ t('ward') }}</th><th>{{ t('patients_col') }}</th></tr>
+            </thead>
+            <tbody>
+              {% for w in blocks.get(code, []) %}
+              <tr class="{{ row_class }}">
+                <td class="fw-semibold">{{ w.name }}</td>
+                <td>
+                  {% set ps = ward_patients.get(w.id, []) %}
+                  {% if ps and ps|length %}
+                    {% for o in ps %}
+                      {% set base = o.name if o.name else (t('caregiver') if o.type == 'caregiver' else '') %}
+                      {% set suffix = (' (' ~ t('caregiver') ~ ')') if (o.type == 'caregiver' and o.name) else '' %}
+                      {% set hist = (' (' ~ o.hist ~ ')') if o.hist else '' %}
+                      <div>{{ (base ~ suffix ~ hist).strip() or '—' }}</div>
+                    {% endfor %}
+                  {% else %}
+                    <span class="text-muted">—</span>
+                  {% endif %}
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+<!-- Keep the date-time picker -->
+<script>
+  (function () {
+    const el = document.querySelector('input[name="at"]');
+    if (el && window.flatpickr) {
+      flatpickr(el, { enableTime: true, dateFormat: 'd.m.Y H:i', time_24hr: true });
+    }
+  })();
+</script>
+{% endblock %}

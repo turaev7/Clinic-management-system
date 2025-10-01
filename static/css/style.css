@@ -1,0 +1,26 @@
+/* Light/Dark themes and clinic color accents */
+:root {
+  --clinic-green: #28a745;
+  --clinic-blue: #0d6efd;
+  --bg-light: #f8f9fa;
+  --text-dark: #212529;
+  --bg-dark: #0b1320;
+  --text-light: #f1f3f5;
+}
+
+.theme-light {
+  background: var(--bg-light);
+  color: var(--text-dark);
+}
+
+.theme-dark {
+  background: var(--bg-dark);
+  color: var(--text-light);
+}
+
+.card, .table { border-radius: 1rem; }
+
+.navbar { background: linear-gradient(90deg, var(--clinic-blue), var(--clinic-green)); }
+
+.table-primary { --bs-table-bg: rgba(13,110,253,.08); }
+.table-success { --bs-table-bg: rgba(25,135,84,.08); }

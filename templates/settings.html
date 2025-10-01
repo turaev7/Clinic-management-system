@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block content %}
+<h4 class="mb-3">{{ t('settings') }}</h4>
+<div class="list-group">
+  <a class="list-group-item list-group-item-action" href="{{ url_for('settings_wards') }}">{{ t('wards_list') }}</a>
+  <a class="list-group-item list-group-item-action" href="{{ url_for('settings_doctors') }}">{{ t('doctors_list') }}</a>
+  <a class="list-group-item list-group-item-action" href="{{ url_for('settings_import') }}">{{ t('import') }}</a>
+</div>
+<div class="card border-warning mt-3">
+  <div class="card-header bg-warning-subtle">
+    {{ t('cleanup_invalid') if t('cleanup_invalid') != 'cleanup_invalid' else 'Patients with missing required fields' }}
+  </div>
+  <div class="card-body">
+    <p class="mb-3">
+      {{ t('cleanup_intro') if t('cleanup_intro') != 'cleanup_intro' else
+         'Find and delete patients created by a bad import (missing required fields).' }}
+    </p>
+    <a class="btn btn-outline-warning" href="{{ url_for('settings_cleanup_invalid') }}">
+      {{ t('cleanup_invalid') if t('cleanup_invalid') != 'cleanup_invalid' else 'Open cleanup' }}
+    </a>
+  </div>
+</div>
+<div class="card border-danger mt-4">
+  <div class="card-header bg-danger text-white">Danger zone</div>
+  <div class="card-body">
+    <p class="mb-3">Delete all patients from the database (use if a wrong import was made).</p>
+    <form method="post" action="{{ url_for('settings_clear_patients') }}" onsubmit="return confirm('Are you sure? This will delete ALL patients.');">
+      <button class="btn btn-danger">Delete all patients</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

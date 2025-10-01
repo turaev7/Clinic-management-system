@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block content %}
+<h4 class="mb-3">{{ t('import') }}</h4>
+
+<div class="card shadow-sm mb-3">
+  <div class="card-body">
+    <p class="mb-2"><strong>{{ t('instructions_title') }}:</strong></p>
+    <ul class="mb-0">
+      <li>{{ t('import_instr_xlsx_only') }}</li>
+      <li>{{ t('import_instr_headers') }}</li>
+      <li>{{ t('import_instr_required_cols') }}</li>
+    </ul>
+  </div>
+</div>
+
+<div class="d-flex gap-2 mb-3">
+  <a class="btn btn-outline-secondary" href="{{ url_for('settings_import_template') }}">
+    {{ t('download_template') }}
+  </a>
+</div>
+
+<form class="card p-3" method="post" enctype="multipart/form-data">
+  <div class="mb-3">
+    <label class="form-label">{{ t('excel_file_label') }}</label>
+    <input type="file" name="file" accept=".xlsx" class="form-control" required>
+  </div>
+  <button class="btn btn-primary">{{ t('import_btn') }}</button>
+</form>
+{% endblock %}

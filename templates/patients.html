@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+{% block content %}
+<h4 class="mb-3">{{ t('patients') }}</h4>
+
+<form class="row g-2 align-items-end mb-3" method="get" action="{{ url_for('patients') }}">
+  <div class="col-md-3">
+    <label class="form-label">{{ t('hist_number') }}</label>
+    <input name="q_hist" value="{{ q_hist }}" class="form-control">
+  </div>
+  <div class="col-md-3">
+    <label class="form-label">{{ t('last_name') }}</label>
+    <input name="q_last" value="{{ q_last }}" class="form-control">
+  </div>
+  <div class="col-md-3">
+    <label class="form-label">{{ t('first_name') }}</label>
+    <input name="q_first" value="{{ q_first }}" class="form-control" >
+  </div>
+  <div class="col-md-3">
+    <label class="form-label">{{ t('patronymic') }}</label>
+    <input name="q_pat" value="{{ q_pat }}" class="form-control" >
+  </div>
+
+  <div class="col-12 d-flex gap-2 mt-1">
+    <button type="submit" class="btn btn-primary">
+      <i class="bi bi-search"></i> {{ t('search') }}
+    </button>
+    <a class="btn btn-secondary" href="{{ url_for('patients') }}">{{ t('cancel') }}</a>
+
+    <a class="btn btn-success ms-auto"
+       href="{{ url_for('patients_export', q_hist=q_hist, q_last=q_last, q_first=q_first, q_pat=q_pat) }}">
+      {{ t('export') }}
+    </a>
+  </div>
+</form>
+
+<div class="table-responsive">
+<table class="table table-hover align-middle">
+  <thead class="table-light">
+    <tr>
+      <th>{{ t('hist_number') }}</th>
+      <th>{{ t('patient_fullname') }}</th>
+      <th>{{ t('birth_date') }}</th>
+      <th>{{ t('phone') }}</th>
+      <th>{{ t('arrival_datetime') }}</th>
+      <th>{{ t('discharge') }}</th>
+      <th>{{ t('ward') }}</th>
+      <th>{{ t('doctor') }}</th>
+      <th>{{ t('caregiver') }}</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for r in rows %}
+      {% set w = wards.get(r.ward_id) %}
+      {% set d = doctors.get(r.doctor_id) %}
+      {% set row_class = 'table-primary' if (w and w.block == 'A') else 'table-success' %}
+      <tr class="{{ row_class }}">
+        <td>{{ r.hist_number }}</td>
+        <td>{{ r.last_name }} {{ r.first_name }} {{ r.patronymic }}</td>
+        <td>{{ r.birth_date }}</td>
+        <td>{{ r.phone }}</td>
+        <td>{{ r.arrival_date }} {{ r.arrival_time }}</td>
+        <td>{{ r.discharge_datetime or '' }}</td>
+        <td>{{ w.name if w else '' }}</td>
+        <td>{{ d.full_name if d else '' }}</td>
+        <td>
+          {% if r.caregiver_exists %}
+            <a class="btn btn-sm btn-outline-dark" data-bs-toggle="collapse" href="#care{{ r.id }}" role="button">{{ t('yes') }}</a>
+          {% else %}
+            <span class="badge bg-secondary">{{ t('no') }}</span>
+          {% endif %}
+        </td>
+        <td>
+          <a class="btn btn-sm btn-outline-primary" href="{{ url_for('edit_patient', pid=r.id) }}">{{ t('edit_profile') }}</a>
+        </td>
+      </tr>
+      {% if r.caregiver_exists %}
+      <tr class="{{ row_class }}">
+        <td colspan="10" class="p-0">
+          <div class="collapse" id="care{{ r.id }}">
+            <div class="p-3">
+              <strong>{{ t('caregiver_details') }}:</strong>
+              <div>FIO: {{ r.caregiver_fullname or '' }}</div>
+              <div>{{ t('ward') }}: {{ wards.get(r.caregiver_ward_id).name if wards.get(r.caregiver_ward_id) else '' }}</div>
+              <div>{{ t('caregiver_arrival_date') }}: {{ r.caregiver_arrival_date or '' }}</div>
+              <div>{{ t('caregiver_departure_date') }}: {{ r.caregiver_departure_date or '' }}</div>
+            </div>
+          </div>
+        </td>
+      </tr>
+      {% endif %}
+    {% endfor %}
+  </tbody>
+</table>
+</div>
+
+<nav aria-label="Page navigation">
+  <ul class="pagination">
+    {% if pagination.has_prev %}
+    <li class="page-item"><a class="page-link" href="{{ url_for('patients', page=pagination.prev_num, q_hist=q_hist, q_last=q_last, q_first=q_first, q_pat=q_pat) }}">«</a></li>
+    {% else %}
+    <li class="page-item disabled"><span class="page-link">«</span></li>
+    {% endif %}
+    <li class="page-item disabled"><span class="page-link">{{ pagination.page }} / {{ pagination.pages or 1 }}</span></li>
+    {% if pagination.has_next %}
+    <li class="page-item"><a class="page-link" href="{{ url_for('patients', page=pagination.next_num, q_hist=q_hist, q_last=q_last, q_first=q_first, q_pat=q_pat) }}">»</a></li>
+    {% else %}
+    <li class="page-item disabled"><span class="page-link">»</span></li>
+    {% endif %}
+  </ul>
+</nav>
+{% endblock %}

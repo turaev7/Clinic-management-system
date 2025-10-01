@@ -1,0 +1,134 @@
+{% extends 'base.html' %}
+{% block content %}
+<h4 class="mb-3">{{ t('edit_profile') }}</h4>
+<form method="post">
+  <div class="row g-3">
+    <div class="col-lg-6">
+      <div class="card shadow-sm h-100">
+        <div class="card-body">
+          <div class="row g-2">
+            <div class="col-md-6">
+              <label class="form-label">{{ t('hist_number') }}</label>
+              <input name="hist_number" class="form-control" value="{{ p.hist_number }}" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">{{ t('birth_date') }}</label>
+              <input name="birth_date" class="form-control" value="{{ p.birth_date }}" required>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">{{ t('last_name') }}</label>
+              <input name="last_name" class="form-control" value="{{ p.last_name }}" required>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">{{ t('first_name') }}</label>
+              <input name="first_name" class="form-control" value="{{ p.first_name }}" required>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">{{ t('patronymic') }}</label>
+              <input name="patronymic" class="form-control" value="{{ p.patronymic }}" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">{{ t('phone') }}</label>
+              <input name="phone" class="form-control" value="{{ p.phone }}" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">{{ t('address') }}</label>
+              <input name="address" class="form-control" value="{{ p.address }}" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">{{ t('occupation') }}</label>
+              <input name="occupation" class="form-control" value="{{ p.occupation }}" required>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-6">
+      <div class="card shadow-sm h-100">
+        <div class="card-body">
+          <div class="row g-2">
+            <div class="col-md-6">
+              <label class="form-label">{{ t('arrival_date') }}</label>
+              <input name="arrival_date" class="form-control" value="{{ p.arrival_date }}" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">{{ t('arrival_time') }}</label>
+              <input name="arrival_time" class="form-control" value="{{ p.arrival_time }}" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">{{ t('ward') }}</label>
+              <select name="ward_id" class="form-select" required>
+                {% for w in wards %}
+                  <option value="{{ w.id }}" {% if w.id == p.ward_id %}selected{% endif %}>{{ w.name }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">{{ t('doctor') }}</label>
+              <select name="doctor_id" class="form-select" required>
+                {% for d in doctors %}
+                  <option value="{{ d.id }}" {% if d.id == p.doctor_id %}selected{% endif %}>{{ d.full_name }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="col-md-12">
+              <label class="form-label me-3">{{ t('caregiver') }}</label>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="caregiver_exists" id="careNo" value="no" {% if not p.caregiver_exists %}checked{% endif %}>
+                <label class="form-check-label" for="careNo">{{ t('no') }}</label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="caregiver_exists" id="careYes" value="yes" {% if p.caregiver_exists %}checked{% endif %}>
+                <label class="form-check-label" for="careYes">{{ t('yes') }}</label>
+              </div>
+            </div>
+            <div id="caregiverFields" class="row g-2 mt-1 {% if not p.caregiver_exists %}d-none{% endif %}">
+              <div class="col-md-6">
+                <label class="form-label">{{ t('caregiver_fullname') }}</label>
+                <input name="caregiver_fullname" class="form-control" value="{{ p.caregiver_fullname or '' }}">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">{{ t('caregiver_ward') }}</label>
+                <select name="caregiver_ward_id" class="form-select">
+                  <option value="">{{ t('ward') }}</option>
+                  {% for w in wards %}
+                    <option value="{{ w.id }}" {% if w.id == p.caregiver_ward_id %}selected{% endif %}>{{ w.name }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">{{ t('caregiver_arrival_date') }}</label>
+                <input name="caregiver_arrival_date" class="form-control" value="{{ p.caregiver_arrival_date or '' }}">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">{{ t('caregiver_departure_date') }}</label>
+                <input name="caregiver_departure_date" class="form-control" value="{{ p.caregiver_departure_date or '' }}">
+              </div>
+            </div>
+
+            <div class="col-md-12">
+              <label class="form-label">{{ t('discharge') }}</label>
+              <input name="discharge_datetime" class="form-control" value="{{ p.discharge_datetime or '' }}">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="mt-3 text-end">
+    <button class="btn btn-success">{{ t('save') }}</button>
+  </div>
+</form>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  function toggleCaregiver() {
+    const yes = document.getElementById('careYes').checked;
+    document.getElementById('caregiverFields').classList.toggle('d-none', !yes);
+  }
+  document.getElementById('careYes').addEventListener('change', toggleCaregiver);
+  document.getElementById('careNo').addEventListener('change', toggleCaregiver);
+});
+</script>
+{% endblock %}
