@@ -1,3 +1,5 @@
+#This is an in-use Project by "Javohir Clinic" located in Karshi, Uzbekistan 
+
 # Clinic Ward Management (Flask)
 
 ## Quick Start
